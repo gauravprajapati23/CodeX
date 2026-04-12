@@ -1,0 +1,170 @@
+ SLIP 13
+Q1 Write a C program to simulate Banker’s algorithm for the purpose of
+deadlock avoidance. the following snapshot of system, A, B, C and D are the
+resource type.
+Process Allocation Max Available
+ A B C A B C A B C
+P0 0 1 0 0 0 0 0 0 0
+P1 2 0 0 2 0 2
+P2 3 0 3 0 0 0
+P3 2 1 1 1 0 0
+P4 0 0 2 0 0 2
+a) Calculate and display the content of need matrix?
+b) Is the system in safe state? If display the safe sequence.
+#include <stdio.h>
+#define PROCESS_COUNT 5
+#define RESOURCE_COUNT 3
+int allocation[PROCESS_COUNT][RESOURCE_COUNT] = 
+{
+{0,1,0},
+{2,0,0},
+{3,0,3},
+{2,1,1},
+{0,2,2}
+};
+int max[PROCESS_COUNT][RESOURCE_COUNT] = 
+{
+ {0,0,0},
+ {2,0,2},
+ {0,0,0},
+ {1,0,0},
+ {0,0,2}
+};
+int available[RESOURCE_COUNT] = {0,0,0};
+int need[PROCESS_COUNT][RESOURCE_COUNT];
+void calculateNeedMatrix() {
+for (int i = 0; i < PROCESS_COUNT; i++) {
+for (int j = 0; j < RESOURCE_COUNT; j++) {
+need[i][j] = max[i][j] - allocation[i][j];
+}
+}
+}
+int isSafeState() {
+int work[RESOURCE_COUNT];
+int finish[PROCESS_COUNT] = {0};
+int safeSequence[PROCESS_COUNT];
+int count = 0;
+for (int i = 0; i < RESOURCE_COUNT; i++) {
+work[i] = available[i];
+}
+while (count < PROCESS_COUNT) {
+int found = 0;
+for (int i = 0; i < PROCESS_COUNT; i++) {
+if (finish[i] == 0) {
+ int j;
+ for (j = 0; j < RESOURCE_COUNT; j++) {
+ if (need[i][j] > work[j])
+ break;
+}
+if (j == RESOURCE_COUNT) {
+for (int k = 0; k < RESOURCE_COUNT; k++) {
+work[k] += allocation[i][k];
+}
+safeSequence[count++] = i;
+finish[i] = 1;
+found = 1;
+}
+ }
+ }
+if (!found) {
+ printf("System is not in a safe state.\n");
+ return 0;
+}
+}
+printf("System is in a safe state.\nSafe sequence is: ");
+for (int i = 0; i < PROCESS_COUNT; i++) {
+printf("P%d ", safeSequence[i]);
+}
+printf("\n");
+return 1;
+}
+int main() {
+calculateNeedMatrix();
+printf("Need Matrix:\n");
+for (int i = 0; i < PROCESS_COUNT; i++) {
+for (int j = 0; j < RESOURCE_COUNT; j++) {
+printf("%d ", need[i][j]);
+}
+printf("\n");
+}
+isSafeState();
+return 0;
+}
+Q2.Q.2 Write a simulation program for disk scheduling using SCAN algorithm. Accept total
+number of disk blocks, disk request string, and current head position from the user. Display
+the list of request in the order in which it is served. Also display the total number of head
+moments.
+176, 79, 34, 60, 92, 11, 41, 114
+Starting Head Position: 65
+Direction: Left
+#include <stdio.h>
+#include <stdlib.h>
+void sort(int arr[], int n) {
+int temp;
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+if (arr[j] > arr[j + 1]) {
+temp = arr[j];
+arr[j] = arr[j + 1];
+arr[j + 1] = temp;
+ }
+}
+}
+}
+void scan(int requests[], int n, int head, int direction, int disk_size) {
+int total_movement = 0;
+int current = head;
+sort(requests, n);
+int index;
+for (index = 0; index < n; index++) {
+if (requests[index] > head) {
+break;
+}
+}
+printf("Order of servicing requests: ");
+if (direction == 0) { // Move left
+ for (int i = index - 1; i >= 0; i--) {
+ printf("%d ", requests[i]);
+total_movement += abs(current - requests[i]);
+current = requests[i];
+}
+total_movement += current;
+current = 0;
+for (int i = index; i < n; i++) {
+ printf("%d ", requests[i]);
+total_movement += abs(current - requests[i]);
+current = requests[i];
+}
+} else { 
+for (int i = index; i < n; i++) {
+printf("%d ", requests[i]);
+total_movement += abs(current - requests[i]);
+ current = requests[i];
+}
+total_movement += abs(disk_size - 1 - current);
+current = disk_size - 1;
+for (int i = index - 1; i >= 0; i--) {
+printf("%d ", requests[i]);
+ total_movement += abs(current - requests[i]);
+ current = requests[i];
+}
+}
+printf("\nTotal head movement: %d\n", total_movement);
+}
+int main() {
+int n, head, direction, disk_size;
+printf("Enter total number of disk blocks: ");
+scanf("%d", &disk_size);
+printf("Enter number of requests: ");
+scanf("%d", &n);
+int requests[n];
+printf("Enter the request string: ");
+for (int i = 0; i < n; i++) {
+scanf("%d", &requests[i]);
+}
+printf("Enter starting head position: ");
+scanf("%d", &head);
+printf("Enter direction (0 for Left, 1 for Right): ");
+scanf("%d", &direction);
+scan(requests, n, head, direction, disk_size);return 0;
+}

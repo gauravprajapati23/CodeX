@@ -1,0 +1,169 @@
+ SLIP 9
+Q.1 Consider the following snapshot of the system.
+Proces s Allocation Max Available A B C D A B C D A B C D 
+ A B C D
+P0 0 0 1 2 0 0 1 2 1 5 2 0
+P1 1 0 0 0 1 7 5 0
+P2 1 3 5 4 2 3 5 6
+P3 0 6 3 2 0 6 5 2
+P4 0 0 1 4 0 6 5 6
+Using Resource –Request algorithm to Check whether the current system is in safe state or not
+#include <stdio.h>
+#include <stdbool.h>
+#define P 5 
+#define R 4 
+void calculateNeed(int need[P][R], int max[P][R], int allocation[P][R]) {
+for (int i = 0; i < P; i++) {
+for (int j = 0; j < R; j++) {
+need[i][j] = max[i][j] - allocation[i][j];
+}
+}
+}
+bool isSafe(int available[], int max[][R], int allocation[][R], int need[][R]) {
+int work[R];
+bool finish[P] = {false};
+for (int i = 0; i < R; i++) {
+work[i] = available[i];
+}
+while (true) {
+bool found = false;
+for (int i = 0; i < P; i++) {
+ if (!finish[i]) {
+bool canAllocate = true;
+for (int j = 0; j < R; j++) {
+if (need[i][j] > work[j]) {
+canAllocate = false;
+break;
+ }
+}
+if (canAllocate) {
+for (int j = 0; j < R; j++) {
+work[j] += allocation[i][j];
+}
+finish[i] = true;
+found = true;
+break;
+}
+}
+}
+if (!found) {
+break;
+}
+}
+for (int i = 0; i < P; i++) {
+if (!finish[i]) {
+return false;
+}
+}
+return true;
+}
+int main() {
+int allocation[P][R] = {
+{0,0,1,2},
+{1,0,0,0},
+{1,3,5,4},
+{0,6,3,2},
+{0,0,1,4}
+ };
+int max[P][R] = {
+{0,0,1,2},
+{1,7,5,0},
+{2,3,5,6},
+{0,6,5,2},
+{0,6,5,6}
+};
+int available[R] = {1,5,2,0};
+int need[P][R];
+ calculateNeed(need, max, allocation);
+if (isSafe(available, max, allocation, need)) {
+printf("The system is in a safe state.\n");
+} else {
+ printf("The system is not in a safe state.\n");
+}
+return 0;
+}
+Q2. Write a simulation program for disk scheduling using LOOK algorithm. 
+Accept total number of disk blocks, disk request string, and current
+ head position from the user. Display the list of request in the order in
+ which it is served. Also display the total number of head moments.
+ 176,79,34,60,92,11,41,114
+Start Head Position: 65
+Direction: Left 
+#include <stdio.h>
+#include <stdlib.h>
+void sortRequests(int *requests, int n) {
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+if (requests[j] > requests[j + 1]) {
+ int temp = requests[j];
+requests[j] = requests[j + 1];
+ requests[j + 1] = temp;
+}
+}
+ }
+}
+void lookAlgorithm(int *requests, int n, int head, int direction) {
+ int totalHeadMovements = 0;
+ int servedRequests[100]; 
+ int servedCount = 0;
+sortRequests(requests, n);
+if (direction == 0) {
+ for (int i = n - 1; i >= 0; i--) {
+if (requests[i] < head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+}
+ totalHeadMovements += abs(head - 0);
+ head = 0;
+ for (int i = 0; i < n; i++) {
+ if (requests[i] > 0) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+ } else { 
+ 
+for (int i = 0; i < n; i++) {
+if (requests[i] > head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+totalHeadMovements += abs(head - 200);
+ head = 200;
+ for (int i = n - 1; i >= 0; i--) {
+ if (requests[i] < 200) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+ }
+printf("Order of requests served: ");
+ for (int i = 0; i < servedCount; i++) {
+ printf("%d ", servedRequests[i]);
+ }
+ printf("\nTotal head movements: %d\n", totalHeadMovements);
+}
+int main() {
+ int n;
+ int head;
+ int direction;
+ int requests[100]; 
+printf("Enter the total number of disk blocks: ");
+scanf("%d", &n);
+ printf("Enter the disk request string (space-separated): ");
+for (int i = 0; i < n; i++) {
+ scanf("%d", &requests[i]);
+}
+printf("Start Head Position: ");
+scanf("%d", &head);
+printf("Direction (0 for Left, 1 for Right): ");
+scanf("%d", &direction);
+lookAlgorithm(requests, n, head, direction);
+return 0;
+}

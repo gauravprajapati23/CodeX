@@ -1,0 +1,127 @@
+ 
+ SLIP 11
+Q.1 Write a C program to simulate Banker’s algorithm for the purpose of
+deadlock avoidance. the following snapshot of system, A, B, C and D are the
+resource type.
+Process Allocation Max Available
+ A B C A B C A B C
+P0 0 1 0 0 0 0 0 0 0
+P1 2 0 0 2 0 2
+P2 3 0 3 0 0 0
+P3 2 1 1 1 0 0
+P4 0 0 2 0 0 2
+Implement the following Menu.
+a) Accept Available
+b) Display Allocation, Max
+c) Display the contents of need matrix
+d) Display Available
+#include <stdio.h>
+#define PROCESS_COUNT 5
+#define RESOURCE_COUNT 3
+int allocation[PROCESS_COUNT][RESOURCE_COUNT] = 
+{
+{0,1,0},
+{2,0,0},
+{3,0,3},
+{2,1,1},
+{0,2,2}
+};
+int max[PROCESS_COUNT][RESOURCE_COUNT] = 
+{
+ {0,0,0},
+ {2,0,2},
+ {0,0,0},
+ {1,0,0},
+ {0,0,2}
+};
+int available[RESOURCE_COUNT] = {0,0,0};
+int need[PROCESS_COUNT][RESOURCE_COUNT];
+void calculateNeedMatrix() {
+for (int i = 0; i < PROCESS_COUNT; i++) {
+for (int j = 0; j < RESOURCE_COUNT; j++) {
+need[i][j] = max[i][j] - allocation[i][j];
+}
+}
+}
+int isSafeState() {
+int work[RESOURCE_COUNT];
+int finish[PROCESS_COUNT] = {0};
+int safeSequence[PROCESS_COUNT];
+int count = 0;
+for (int i = 0; i < RESOURCE_COUNT; i++) {
+work[i] = available[i];
+}
+while (count < PROCESS_COUNT) {
+int found = 0;
+for (int i = 0; i < PROCESS_COUNT; i++) {
+if (finish[i] == 0) {
+ int j;
+ for (j = 0; j < RESOURCE_COUNT; j++) {
+ if (need[i][j] > work[j])
+ break;
+}
+if (j == RESOURCE_COUNT) {
+for (int k = 0; k < RESOURCE_COUNT; k++) {
+work[k] += allocation[i][k];
+}
+safeSequence[count++] = i;
+finish[i] = 1;
+found = 1;
+}
+ }
+ }
+if (!found) {
+ printf("System is not in a safe state.\n");
+ return 0;
+}
+}
+printf("System is in a safe state.\nSafe sequence is: ");
+for (int i = 0; i < PROCESS_COUNT; i++) {
+printf("P%d ", safeSequence[i]);
+}
+printf("\n");
+return 1;
+}
+int main() {
+calculateNeedMatrix();
+printf("Need Matrix:\n");
+for (int i = 0; i < PROCESS_COUNT; i++) {
+for (int j = 0; j < RESOURCE_COUNT; j++) {
+printf("%d ", need[i][j]);
+}
+printf("\n");
+}
+isSafeState();
+return 0;
+}
+Q2. Write an MPI program to find the min number from randomly generated 
+1000 numbers (stored in array) on a cluster (Hint: Use MPI_Reduce)
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <mpi.h>
+#define TOTAL_NUMBERS 1000
+int main(int argc, char** argv) {
+ int world_size, world_rank;
+ int numbers[TOTAL_NUMBERS];
+ int local_min, global_min;
+MPI_Init(&argc, &argv);
+MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+srand(time(NULL) + world_rank);
+for (int i = 0; i < TOTAL_NUMBERS; i++) {
+ numbers[i] = rand() % 10000; 
+}
+local_min = numbers[0];
+ for (int i = 1; i < TOTAL_NUMBERS; i++) {
+ if (numbers[i] < local_min) {
+ local_min = numbers[i];
+ }
+ }
+MPI_Reduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+if (world_rank == 0) {
+ printf("The minimum number is %d\n", global_min);
+ }
+MPI_Finalize();
+ return 0;
+}

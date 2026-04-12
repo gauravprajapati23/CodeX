@@ -1,0 +1,232 @@
+ SLIP 17
+Q.1 Write a program to simulate Indexed file allocation method. 
+Assume disk with n number of blocks. Give value of n as input.
+ Randomly mark some block as allocated and accordingly maintain
+ the list of free blocks Write menu driver program with menu
+ options as mentioned above and implement each option. 
+• Show Bit Vector
+• Show Directory 
+• Delete Already File 
+• Exit 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX_BLOCKS 50 
+int disk[MAX_BLOCKS]; 
+int n; 
+struct DirectoryEntry {
+ int file_id;
+ int index_block;
+ int file_blocks[MAX_BLOCKS];
+};
+struct DirectoryEntry directory[MAX_BLOCKS];
+int directory_size = 0;
+void showBitVector() {
+ printf("\nBit Vector (1 = Allocated, 0 = Free):\n");
+ for (int i = 0; i < n; i++) {
+ printf("%d ", disk[i]);
+ }
+ printf("\n");
+}
+void showDirectory() {
+ if (directory_size == 0) {
+ printf("\nNo files in the directory.\n");
+ return;
+ }
+printf("\nDirectory Contents:\n");
+for (int i = 0; i < directory_size; i++) {
+printf("File ID: %d, Index Block: %d, Allocated Blocks: ",
+ directory[i].file_id, directory[i].index_block);
+for (int j = 0; j < MAX_BLOCKS && directory[i].file_blocks[j] != -1; j++) {
+printf("%d ", directory[i].file_blocks[j]);
+}
+ printf("\n");
+}
+}
+void deleteFile(int file_id) {
+ int found = 0;
+ for (int i = 0; i < directory_size; i++) {
+ if (directory[i].file_id == file_id) {
+ found = 1;
+ for (int j = 0; j < MAX_BLOCKS && directory[i].file_blocks[j] != -1; j++) {
+ disk[directory[i].file_blocks[j]] = 0; 
+ }
+for (int j = i; j < directory_size - 1; j++) {
+ directory[j] = directory[j + 1];
+}
+directory_size--;
+printf("\nFile %d deleted successfully.\n", file_id);
+break;
+}
+ }
+ if (!found) {
+ printf("\nFile ID %d not found.\n", file_id);
+ }
+}
+void allocateFile(int file_id) {
+ int index_block = -1;
+ 
+for (int i = 0; i < n; i++) {
+ if (disk[i] == 0) {
+ index_block = i;
+ disk[i] = 1; 
+ break;
+ }
+ }
+ if (index_block == -1) {
+ printf("\nNo free blocks available for index block.\n");
+ return;
+ }
+ struct DirectoryEntry new_file;
+ new_file.file_id = file_id;
+ new_file.index_block = index_block;
+ printf("\nAllocating blocks for file %d...\n", file_id);
+ for (int i = 0; i < MAX_BLOCKS; i++) {
+ int block = -1;
+ 
+ for (int j = 0; j < n; j++) {
+ if (disk[j] == 0) {
+ block = j;
+ disk[j] = 1; 
+ break;
+ }
+ }
+ if (block != -1) {
+ new_file.file_blocks[i] = block;
+ } else {
+ new_file.file_blocks[i] = -1; 
+ break;
+ }
+ }
+directory[directory_size++] = new_file;
+printf("File %d allocated successfully with index block%d.\n", file_id, index_block);
+}
+int main() {
+ srand(time(0)); 
+ printf("Enter the number of blocks in the disk (n <= 50): ");
+ scanf("%d", &n);
+ if (n > MAX_BLOCKS || n <= 0) {
+ printf("Invalid number of blocks. Must be between 1 and 50.\n");
+ return 1;
+ }
+for (int i = 0; i < n; i++) {
+ disk[i] = 0;
+ }
+int choice, file_id;
+ while (1) {
+ printf("\nMenu:\n");
+ printf("1. Show Bit Vector\n");
+ printf("2. Show Directory\n");
+ printf("3. Delete Already File\n");
+ printf("4. Exit\n");
+ printf("Enter your choice: ");
+ scanf("%d", &choice);
+ switch (choice) {
+ case 1:
+ showBitVector();
+ break;
+ case 2:
+ showDirectory();
+ break;
+ case 3:
+ printf("Enter the file ID to delete: ");
+ scanf("%d", &file_id);
+ deleteFile(file_id);
+ break;
+ case 4:
+ printf("Exiting the program.\n");
+ exit(0);
+ default:
+ printf("Invalid choice. Please try again.\n");
+ }
+if (rand() % 2 == 0) {
+ file_id = rand() % 100 + 1; 
+ allocateFile(file_id);
+ }
+ }
+ return 0;
+}
+Q.2 Write a simulation program for disk scheduling using LOOK algorithm. 
+Accept total number of disk blocks, disk request string, and current head
+ position from the user. Display the list of request in the order in which 
+it is served. Also display the total number of head moments.
+ 23, 89, 132, 42, 187, 69, 36, 55 
+Start Head Position: 40 Direction: Left 
+#include <stdio.h>
+#include <stdlib.h>
+void sortRequests(int *requests, int n) {
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+if (requests[j] > requests[j + 1]) {
+ int temp = requests[j];
+requests[j] = requests[j + 1];
+ requests[j + 1] = temp;
+}
+}
+ }
+}
+void lookAlgorithm(int *requests, int n, int head, int direction) {
+ int totalHeadMovements = 0;
+ int servedRequests[100]; 
+ int servedCount = 0;
+sortRequests(requests, n);
+if (direction == 0) {
+ for (int i = n - 1; i >= 0; i--) {
+if (requests[i] < head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+}
+ totalHeadMovements += abs(head - 0);
+ head = 0;
+ for (int i = 0; i < n; i++) {
+ if (requests[i] > 0) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+ } else { 
+ 
+for (int i = 0; i < n; i++) {
+if (requests[i] > head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+totalHeadMovements += abs(head - 200);
+ head = 200;
+ for (int i = n - 1; i >= 0; i--) {
+ if (requests[i] < 200) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+ }
+printf("Order of requests served: ");
+ for (int i = 0; i < servedCount; i++) {
+ printf("%d ", servedRequests[i]);
+ }
+ printf("\nTotal head movements: %d\n", totalHeadMovements);
+}
+int main() {
+ int n;
+ int head;
+ int direction;
+ int requests[100]; 
+printf("Enter the total number of disk blocks: ");
+scanf("%d", &n);
+ printf("Enter the disk request string (space-separated): ");
+for (int i = 0; i < n; i++) {
+ scanf("%d", &requests[i]);
+}
+printf("Start Head Position: ");
+scanf("%d", &head);
+printf("Direction (0 for Left, 1 for Right): ");
+scanf("%d", &direction);
+lookAlgorithm(requests, n, head, direction);
+return 0;
+}

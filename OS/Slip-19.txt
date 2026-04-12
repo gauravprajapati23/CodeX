@@ -1,0 +1,148 @@
+ SLIP 19
+Q.1 Write a C program to simulate Banker’s algorithm for the purpose of
+ deadlock avoidance.Consider the following snapshot of system, 
+A, B, C and D is the resource type. Process Allocation Max Available 
+ A B C D A B C D A B C D 
+P0 0 3 2 4 6 5 4 4 3 4 4 2 
+P1 1 2 0 1 4 4 4 4
+P2 0 0 0 0 0 0 1 2
+P3 3 3 2 2 3 9 3 4 
+P4 1 4 3 2 2 5 3 3 
+P5 2 4 1 4 4 6 3 4
+a) Calculate and display the content of need matrix? 
+b) Is the system in safe state? If display the safe sequence. 
+#include <stdio.h>
+#define PROCESS_COUNT 6
+#define RESOURCE_COUNT 4
+int allocation[PROCESS_COUNT][RESOURCE_COUNT] = {
+ {0,3,2,4},
+ {1,2,0,1},
+ {0,0,0,0},
+ {3,3,2,2},
+ {1,4,3,2},
+ {2,4,1,4}
+};
+int max[PROCESS_COUNT][RESOURCE_COUNT] = {
+ {6,5,4,4},
+ {4,4,4,4},
+ {0,0,1,2},
+ {3,9,3,4},
+ {2,5,3,3},
+ {4,6,3,4}
+};
+int available[RESOURCE_COUNT] = {3,4,4,2};
+int need[PROCESS_COUNT][RESOURCE_COUNT];
+void calculateNeedMatrix() {
+ for (int i = 0; i < PROCESS_COUNT; i++) {
+ for (int j = 0; j < RESOURCE_COUNT; j++) {
+ need[i][j] = max[i][j] - allocation[i][j];
+ }
+ }
+}
+int isSafeState() {
+ int work[RESOURCE_COUNT];
+ int finish[PROCESS_COUNT] = {0};
+ int safeSequence[PROCESS_COUNT];
+ int count = 0;
+ for (int i = 0; i < RESOURCE_COUNT; i++) {
+ work[i] = available[i];
+ }
+ while (count < PROCESS_COUNT) {
+ int found = 0;
+ for (int i = 0; i < PROCESS_COUNT; i++) {
+ if (finish[i] == 0) {
+ int j;
+ for (j = 0; j < RESOURCE_COUNT; j++) {
+ if (need[i][j] > work[j])
+ break;
+ }
+ if (j == RESOURCE_COUNT) {
+ for (int k = 0; k < RESOURCE_COUNT; k++) {
+ work[k] += allocation[i][k];
+ }
+ safeSequence[count++] = i;
+ finish[i] = 1;
+ found = 1;
+ }
+ }
+ }
+ if (!found) {
+ printf("System is not in a safe state.\n");
+ return 0;
+ }
+ }
+ printf("System is in a safe state.\nSafe sequence is: ");
+ for (int i = 0; i < PROCESS_COUNT; i++) {
+ printf("P%d ", safeSequence[i]);
+ }
+ printf("\n");
+ return 1;
+}
+int main() {
+ calculateNeedMatrix();
+ printf("Need Matrix:\n");
+ for (int i = 0; i < PROCESS_COUNT; i++) {
+ for (int j = 0; j < RESOURCE_COUNT; j++) {
+ printf("%d ", need[i][j]);
+ }
+ printf("\n");
+ }
+ isSafeState();
+ return 0;
+}
+ Q.2 Write a simulation program for disk scheduling using C-SCAN algorithm.
+ Accept total number of disk blocks, disk request string, and current head
+ position from the user. Display the list of request in the order in which
+ it is served. Also display the total number of head moments.
+ 23, 89, 132, 42, 187, 69, 36, 55 Start Head Position: 40 Direction: Left 
+#include <stdio.h>
+#include <stdlib.h>
+void sortRequests(int requests[], int n) {
+int temp;
+for (int i = 0; i < n-1; i++) {
+for (int j = i+1; j < n; j++) {
+if (requests[i] > requests[j]) {
+temp = requests[i];
+requests[i] = requests[j];requests[j] = temp;
+ }
+ }
+ }
+}
+void cscan(int requests[], int n, int head, int diskSize, char direction) {
+int totalHeadMovements = 0;
+int index = 0;
+int servedRequests[n];
+sortRequests(requests, n);
+if (direction == 'R') {
+for (int i = 0; i < n; i++) {
+if (requests[i] >= head) {
+index = i;
+break;
+}
+}
+for (int i = index; i < n; i++) {
+servedRequests[i - index] = requests[i];
+}
+for (int i = 0; i < index; i++) {
+servedRequests[n - index + i] = requests[i];
+}
+totalHeadMovements += (diskSize - 1 - head) + (diskSize - 1) - servedRequests[n-1];
+printf("Requests in the order they are served:\n");
+for (int i = 0; i < n; i++) {
+printf("%d ", servedRequests[i]);
+}
+}
+printf("\nTotal head movements: %d\n", totalHeadMovements);
+}
+int main() {
+int requests[] = {23,89,132,42,187,69,36,55};
+int n = sizeof(requests) / sizeof(requests[0]);
+int head, diskSize = 200;
+char direction;
+printf("Enter the starting head position: ");
+scanf("%d", &head);
+printf("Enter the direction (R for Right, L for Left): ");
+scanf(" %c", &direction);
+cscan(requests, n, head, diskSize, direction);
+return 0;
+}

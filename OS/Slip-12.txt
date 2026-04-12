@@ -1,0 +1,124 @@
+ SLIP 12
+ Q1.Write an MPI program to calculate sum and average of randomly
+ generated 1000 numbers (stored in array) on a cluster
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define ARRAY_SIZE 1000
+int main(int argc, char *argv[]) {
+int rank, size, i;
+int numbers[ARRAY_SIZE], local_sum = 0, total_sum = 0;
+double average;
+MPI_Init(&argc, &argv);
+MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+MPI_Comm_size(MPI_COMM_WORLD, &size);
+if (rank == 0) {
+srand(time(NULL));
+for (i = 0; i < ARRAY_SIZE; i++) {
+numbers[i] = rand() % 100;
+ }
+}
+int chunk_size = ARRAY_SIZE / size;
+int local_numbers[chunk_size];
+MPI_Scatter(numbers, chunk_size, MPI_INT, local_numbers, chunk_size, MPI_INT, 0, MPI_COMM_WORLD);
+for (i = 0; i < chunk_size; i++) {
+local_sum += local_numbers[i];
+}
+MPI_Reduce(&local_sum, &total_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+if (rank == 0) {
+ average = total_sum / (double)ARRAY_SIZE;
+printf("Total sum of 1000 numbers: %d\n", total_sum);
+printf("Average of 1000 numbers: %f\n", average);
+}
+MPI_Finalize();
+return 0;
+}
+Q2.Write a simulation program for disk scheduling using C-LOOK algorithm. 
+Accept total number of disk blocks, disk request string, and current head 
+position from the user. Display the list of request in the order in
+ which it is served. Also display the total number of head moments. 
+23, 89, 132, 42, 187, 69, 36, 55 
+Start Head Position: 40 
+Direction: Right
+#include <stdio.h>
+#include <stdlib.h>
+void sortRequests(int *requests, int n) {
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+ if (requests[j] > requests[j + 1]) {
+int temp = requests[j];
+ requests[j] = requests[j + 1];
+ requests[j + 1] = temp;
+ }
+ }
+}
+}
+void cLookAlgorithm(int *requests, int n, int head, int direction) {
+ int totalHeadMovements = 0;
+ int servedRequests[100]; 
+ int servedCount = 0;
+ sortRequests(requests, n);
+if (direction == 1) { 
+ for (int i = 0; i < n; i++) {
+if (requests[i] >= head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+if (servedCount > 0) {
+totalHeadMovements += abs(head - requests[0]);
+ head = requests[0];
+ }
+ for (int i = 0; i < n; i++) {
+ if (requests[i] < head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+ } else {
+for (int i = n - 1; i >= 0; i--) {
+if (requests[i] <= head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ }
+if (servedCount > 0) {
+ totalHeadMovements += abs(head - requests[n - 1]);
+ head = requests[n - 1];
+ }
+for (int i = n - 1; i >= 0; i--) {
+ if (requests[i] > head) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+}
+ }
+ printf("Order of requests served: ");
+ for (int i = 0; i < servedCount; i++) {
+ printf("%d ", servedRequests[i]);
+ }
+ printf("\nTotal head movements: %d\n", totalHeadMovements);
+}
+int main() {
+ int n;
+ int head;
+ int direction;
+ int requests[100]; 
+ printf("Enter the total number of disk blocks: ");
+ scanf("%d", &n);
+printf("Enter the disk request string (space-separated): ");
+ for (int i = 0; i < n; i++) {
+ scanf("%d", &requests[i]);
+ }
+printf("Start Head Position: ");
+ scanf("%d", &head);
+printf("Direction (1 for Right, 0 for Left): ");
+ scanf("%d", &direction);
+cLookAlgorithm(requests, n, head, direction);
+return 0;
+}

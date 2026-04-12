@@ -1,0 +1,69 @@
+ SLIP 30
+Q.1 Write an MPI program to find the min number from randomly generated
+ 1000 numbers (stored in array) on a cluster (Hint: Use MPI_Reduce) 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <mpi.h>
+#define TOTAL_NUMBERS 1000
+int main(int argc, char** argv) {
+ int world_size, world_rank;
+ int numbers[TOTAL_NUMBERS];
+ int local_min, global_min;
+MPI_Init(&argc, &argv);
+MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+srand(time(NULL) + world_rank);
+for (int i = 0; i < TOTAL_NUMBERS; i++) {
+ numbers[i] = rand() % 10000; 
+}
+local_min = numbers[0];
+ for (int i = 1; i < TOTAL_NUMBERS; i++) {
+ if (numbers[i] < local_min) {
+ local_min = numbers[i];
+ }
+ }
+MPI_Reduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+if (world_rank == 0) {
+ printf("The minimum number is %d\n", global_min);
+ }
+MPI_Finalize();
+ return 0;
+}
+Q.2 Write a simulation program for disk scheduling using FCFS algorithm.
+ Accept total number of disk blocks, disk request string, and current head
+ position from the user. Display the list of request in the order in which
+ it is served. Also display the total number of head moments.
+ 65, 95, 30, 91, 18, 116, 142, 44, 168 Start Head Position: 52
+#include <stdio.h>
+#include <stdlib.h>
+void fcfsDiskScheduling(int *requests, int n, int head) {
+ int totalHeadMovements = 0;
+ int servedRequests[100]; 
+ int servedCount = 0;
+for (int i = 0; i < n; i++) {
+ servedRequests[servedCount++] = requests[i];
+ totalHeadMovements += abs(head - requests[i]);
+ head = requests[i];
+ }
+ printf("Order of requests served: ");
+ for (int i = 0; i < servedCount; i++) {
+ printf("%d ", servedRequests[i]);
+ }
+ printf("\nTotal head movements: %d\n", totalHeadMovements);
+}
+int main() {
+ int n;
+ int head;
+ int requests[100]; 
+ printf("Enter the total number of disk blocks: ");
+ scanf("%d", &n);
+ printf("Enter the disk request string (space-separated): ");
+ for (int i = 0; i < n; i++) {
+ scanf("%d", &requests[i]);
+ }
+ printf("Start Head Position: ");
+ scanf("%d", &head);
+ fcfsDiskScheduling(requests, n, head);
+ return 0;
+}
