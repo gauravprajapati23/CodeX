@@ -1,0 +1,76 @@
+Q. 1) Write a PHP script using AJAX concept, to check user name and password are valid or Invalid (use 
+database to store user name and password).   
+
+<?php
+$conn = new mysqli("localhost", "root", "", "test");
+
+if (isset($_POST['uname'])) {
+    $uname = $_POST['uname'];
+    $pass = $_POST['pass'];
+
+    $sql = "SELECT * FROM users WHERE username='$uname' AND password='$pass'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        echo "Valid User";
+    } else {
+        echo "Invalid User";
+    }
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<script>
+function checkLogin() {
+    var uname = document.getElementById("uname").value;
+    var pass = document.getElementById("pass").value;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("result").innerHTML = this.responseText;
+        }
+    };
+    xhttp.open("POST", "", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("uname=" + uname + "&pass=" + pass);
+}
+</script>
+</head>
+<body>
+Username: <input type="text" id="uname"><br>
+Password: <input type="password" id="pass"><br>
+<button onclick="checkLogin()">Login</button>
+<div id="result"></div>
+</body>
+</html>
+
+
+Q. 2 ) Build a simple linear regression model for Car Dataset.         
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+data = {
+    'engine_size': [1000,1500,2000,2500,3000,3500,4000],
+    'mileage': [20,18,15,12,10,8,6],
+    'price': [300000,500000,700000,900000,1200000,1500000,1800000]
+}
+
+df = pd.DataFrame(data)
+
+X = df[['engine_size','mileage']]
+y = df['price']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+predictions = model.predict(X_test)
+
+print(predictions)

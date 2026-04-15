@@ -1,0 +1,81 @@
+Q. 1) Write Ajax program to get book details from XML file when user select a book name. Create XML 
+file for storing details of book(title, author, year, price).  
+<!-- Q1 AJAX + XML -->
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Details</title>
+<script>
+function loadBook() {
+    var book = document.getElementById("book").value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var xml = this.responseXML;
+            var books = xml.getElementsByTagName("book");
+            var output = "";
+            for (var i = 0; i < books.length; i++) {
+                if (books[i].getElementsByTagName("title")[0].childNodes[0].nodeValue == book) {
+                    output += "Author: " + books[i].getElementsByTagName("author")[0].childNodes[0].nodeValue + "<br>";
+                    output += "Year: " + books[i].getElementsByTagName("year")[0].childNodes[0].nodeValue + "<br>";
+                    output += "Price: " + books[i].getElementsByTagName("price")[0].childNodes[0].nodeValue;
+                }
+            }
+            document.getElementById("result").innerHTML = output;
+        }
+    };
+    xhttp.open("GET", "books.xml", true);
+    xhttp.send();
+}
+</script>
+</head>
+<body>
+<select id="book" onchange="loadBook()">
+<option>Select Book</option>
+<option>Book A</option>
+<option>Book B</option>
+</select>
+<div id="result"></div>
+</body>
+</html>
+
+<!-- books.xml -->
+<books>
+    <book>
+        <title>Book A</title>
+        <author>Author A</author>
+        <year>2020</year>
+        <price>500</price>
+    </book>
+    <book>
+        <title>Book B</title>
+        <author>Author B</author>
+        <year>2022</year>
+        <price>700</price>
+    </book>
+</books>
+
+
+Q. 2)Consider any text paragraph. Preprocess the text to remove any special characters and digits. 
+Generate the summary using extractive summarization process 
+import re
+from heapq import nlargest
+from collections import defaultdict
+
+text = """Artificial intelligence is transforming industries by enabling machines to learn from data and make decisions. It is widely used in healthcare, finance, and transportation. AI improves efficiency and accuracy in tasks. However, ethical concerns and data privacy issues remain challenges."""
+
+clean_text = re.sub(r'[^a-zA-Z\s]', '', text)
+sentences = re.split(r'(?<=[.!?]) +', text)
+
+word_freq = defaultdict(int)
+for word in clean_text.lower().split():
+    word_freq[word] += 1
+
+sentence_scores = defaultdict(int)
+for sentence in sentences:
+    for word in re.sub(r'[^a-zA-Z\s]', '', sentence).lower().split():
+        if word in word_freq:
+            sentence_scores[sentence] += word_freq[word]
+
+summary = nlargest(2, sentence_scores, key=sentence_scores.get)
+print(' '.join(summary))

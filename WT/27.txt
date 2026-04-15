@@ -1,0 +1,79 @@
+Q. 1) Create web Application that contains Voters details and check proper validation for (name, 
+age, and nationality), as Name should be in upper case letters only, Age should not be less than 
+18 yrs and Nationality should be Indian.(use HTML-AJAX-PHP)                               
+
+(HTML File)
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Voter Validation</title>
+<script>
+function validateForm() {
+    var name = document.getElementById("name").value;
+    var age = document.getElementById("age").value;
+    var nationality = document.getElementById("nationality").value;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("result").innerHTML = this.responseText;
+        }
+    };
+    xhttp.open("POST", "validate.php", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("name=" + name + "&age=" + age + "&nationality=" + nationality);
+}
+</script>
+</head>
+<body>
+Name: <input type="text" id="name"><br>
+Age: <input type="number" id="age"><br>
+Nationality: <input type="text" id="nationality"><br>
+<button onclick="validateForm()">Submit</button>
+<div id="result"></div>
+</body>
+</html>
+
+(PHP File)
+
+<?php
+$name = $_POST['name'];
+$age = $_POST['age'];
+$nationality = $_POST['nationality'];
+
+if (!preg_match("/^[A-Z ]+$/", $name)) {
+    echo "Invalid Name";
+}
+else if ($age < 18) {
+    echo "Age must be 18 or above";
+}
+else if (strtolower($nationality) != "indian") {
+    echo "Nationality must be Indian";
+}
+else {
+    echo "Valid Voter";
+}
+?>
+
+
+
+Q. 2 ) Create your own transactions dataset and apply the above process on your dataset
+
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+
+data = {
+    'Milk':    [1,0,1,1,0],
+    'Bread':   [1,1,1,0,1],
+    'Butter':  [0,1,1,1,0],
+    'Eggs':    [1,0,1,0,1]
+}
+
+df = pd.DataFrame(data)
+
+frequent = apriori(df, min_support=0.4, use_colnames=True)
+rules = association_rules(frequent, metric="confidence", min_threshold=0.7)
+
+print(frequent)
+print(rules)

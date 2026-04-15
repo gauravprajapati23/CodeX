@@ -1,0 +1,86 @@
+Q. 1) Create employee table as follows EMP (eno, ename, designation, salary). Write Ajax program to 
+select the employees name and print the selected employee’s details.
+
+(html file) 
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Details</title>
+<script>
+function loadEmp() {
+    var emp = document.getElementById("emp").value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var xml = this.responseXML;
+            var employees = xml.getElementsByTagName("employee");
+            var output = "";
+            for (var i = 0; i < employees.length; i++) {
+                if (employees[i].getElementsByTagName("ename")[0].childNodes[0].nodeValue == emp) {
+                    output += "ENO: " + employees[i].getElementsByTagName("eno")[0].childNodes[0].nodeValue + "<br>";
+                    output += "Designation: " + employees[i].getElementsByTagName("designation")[0].childNodes[0].nodeValue + "<br>";
+                    output += "Salary: " + employees[i].getElementsByTagName("salary")[0].childNodes[0].nodeValue;
+                }
+            }
+            document.getElementById("result").innerHTML = output;
+        }
+    };
+    xhttp.open("GET", "emp.xml", true);
+    xhttp.send();
+}
+</script>
+</head>
+<body>
+<select id="emp" onchange="loadEmp()">
+<option>Select Employee</option>
+<option>Rahul</option>
+<option>Priya</option>
+</select>
+<div id="result"></div>
+</body>
+</html>
+
+(XML file)
+
+<employees>
+    <employee>
+        <eno>1</eno>
+        <ename>Rahul</ename>
+        <designation>Manager</designation>
+        <salary>50000</salary>
+    </employee>
+    <employee>
+        <eno>2</eno>
+        <ename>Priya</ename>
+        <designation>Developer</designation>
+        <salary>40000</salary>
+    </employee>
+</employees>
+
+
+Q. 2 )Consider text paragraph. """Hello all, Welcome to Python Programming Academy. Python 
+Programming Academy is a nice platform to learn new programming skills. It is difficult to get enrolled 
+in this Academy."""  Preprocess the text to remove any special characters and digits. Generate the 
+summary using extractive summarization  process.           
+import re
+from heapq import nlargest
+from collections import defaultdict
+
+text = """Hello all, Welcome to Python Programming Academy. Python Programming Academy is a nice platform to learn new programming skills. It is difficult to get enrolled in this Academy."""
+
+clean_text = re.sub(r'[^a-zA-Z\s]', '', text)
+sentences = re.split(r'(?<=[.!?]) +', text)
+
+word_freq = defaultdict(int)
+for word in clean_text.lower().split():
+    word_freq[word] += 1
+
+sentence_scores = defaultdict(int)
+for sentence in sentences:
+    for word in re.sub(r'[^a-zA-Z\s]', '', sentence).lower().split():
+        if word in word_freq:
+            sentence_scores[sentence] += word_freq[word]
+
+summary = nlargest(2, sentence_scores, key=sentence_scores.get)
+print(' '.join(summary))

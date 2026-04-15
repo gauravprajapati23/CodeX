@@ -1,0 +1,79 @@
+Q. 1) Write a PHP script for the following: Design a form to accept a number from the user. 
+Perform the operations and show the results.  
+1) Fibonacci Series.  
+2) To find sum of the digits of that number. 
+(Use the concept of self processing page.)               
+
+<?php
+$result1 = "";
+$result2 = "";
+
+if (isset($_POST['num'])) {
+    $num = $_POST['num'];
+
+    $a = 0;
+    $b = 1;
+    $fib = "";
+    for ($i = 0; $i < $num; $i++) {
+        $fib .= $a . " ";
+        $temp = $a + $b;
+        $a = $b;
+        $b = $temp;
+    }
+    $result1 = $fib;
+
+    $sum = 0;
+    $n = $num;
+    while ($n > 0) {
+        $sum += $n % 10;
+        $n = (int)($n / 10);
+    }
+    $result2 = $sum;
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Operations</title>
+</head>
+<body>
+<form method="post">
+Enter Number: <input type="number" name="num">
+<input type="submit" value="Submit">
+</form>
+
+<?php
+if ($result1 != "") {
+    echo "Fibonacci Series: " . $result1 . "<br>";
+    echo "Sum of Digits: " . $result2;
+}
+?>
+</body>
+</html>
+
+
+
+Q. 2 ) Build a logistic regression model for Student Score Dataset.                              
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+data = {
+    'hours_study': [1,2,3,4,5,6,7,8],
+    'attendance': [50,55,60,65,70,75,80,85],
+    'pass': [0,0,0,0,1,1,1,1]
+}
+
+df = pd.DataFrame(data)
+
+X = df[['hours_study','attendance']]
+y = df['pass']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+pred = model.predict(X_test)
+print(pred)

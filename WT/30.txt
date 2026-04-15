@@ -1,0 +1,66 @@
+Q. 1) Create a XML file which gives details of books available in “Bookstore” from following 
+categories.  
+1) Yoga 
+2) Story 
+3) Technical 
+and elements in each category are in  the following  format 
+<Book> 
+<Book_Title> --------------</Book_Title> 
+<Book_Author> ---------------</Book_Author> 
+<Book_Price> --------------</Book_Price> 
+</Book> 
+Save the file as “Bookcategory.xml”                   
+
+<Bookstore>
+    <Yoga>
+        <Book>
+            <Book_Title>Yoga for Beginners</Book_Title>
+            <Book_Author>Ram Dev</Book_Author>
+            <Book_Price>300</Book_Price>
+        </Book>
+    </Yoga>
+
+    <Story>
+        <Book>
+            <Book_Title>Short Stories</Book_Title>
+            <Book_Author>R.K. Narayan</Book_Author>
+            <Book_Price>250</Book_Price>
+        </Book>
+    </Story>
+
+    <Technical>
+        <Book>
+            <Book_Title>Python Programming</Book_Title>
+            <Book_Author>Guido Rossum</Book_Author>
+            <Book_Price>500</Book_Price>
+        </Book>
+    </Technical>
+</Bookstore>
+
+
+Q. 2 ) Create the dataset . transactions = [['eggs', 'milk','bread'], ['eggs', 'apple'], ['milk', 'bread'], ['apple', 
+'milk'], ['milk', 'apple', 'bread']] . 
+Convert the categorical values into numeric format.Apply the apriori algorithm on the above dataset to 
+generate the frequent itemsets and association rules.                                                           
+
+import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
+
+transactions = [
+    ['eggs', 'milk', 'bread'],
+    ['eggs', 'apple'],
+    ['milk', 'bread'],
+    ['apple', 'milk'],
+    ['milk', 'apple', 'bread']
+]
+
+te = TransactionEncoder()
+te_data = te.fit(transactions).transform(transactions)
+df = pd.DataFrame(te_data, columns=te.columns_)
+
+frequent_itemsets = apriori(df, min_support=0.4, use_colnames=True)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.6)
+
+print(frequent_itemsets)
+print(rules)
