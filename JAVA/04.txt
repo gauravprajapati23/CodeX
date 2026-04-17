@@ -1,0 +1,75 @@
+1. Write a Java program using Runnable interface to blink Text on the frame. [15 M] 
+// Q1
+import javax.swing.*;
+
+public class BlinkText extends JFrame implements Runnable {
+    JLabel label;
+    Thread t;
+
+    public BlinkText() {
+        label = new JLabel("Blinking Text", SwingConstants.CENTER);
+        add(label);
+        setSize(300, 200);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        t = new Thread(this);
+        t.start();
+    }
+
+    public void run() {
+        while (true) {
+            try {
+                label.setVisible(false);
+                Thread.sleep(500);
+                label.setVisible(true);
+                Thread.sleep(500);
+            } catch (Exception e) {}
+        }
+    }
+
+    public static void main(String[] args) {
+        new BlinkText();
+    }
+}
+
+
+2. Write a Java program to store city names and their STD codes using an appropriate 
+collection and perform following operations: 
+i. Add a new city and its code (No duplicates)   
+ii. Remove a city from the collection   
+iii. Search for a city name and display the code  [15 M] 
+// Q2
+import java.util.*;
+
+public class CitySTD {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        HashMap<String, Integer> map = new HashMap<>();
+
+        map.put("Mumbai", 22);
+        map.put("Pune", 20);
+
+        System.out.println("1.Add 2.Remove 3.Search");
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        if (choice == 1) {
+            String city = sc.nextLine();
+            int code = sc.nextInt();
+            if (!map.containsKey(city)) {
+                map.put(city, code);
+            }
+        } else if (choice == 2) {
+            String city = sc.nextLine();
+            map.remove(city);
+        } else if (choice == 3) {
+            String city = sc.nextLine();
+            if (map.containsKey(city)) {
+                System.out.println(map.get(city));
+            } else {
+                System.out.println("Not Found");
+            }
+        }
+    }
+}

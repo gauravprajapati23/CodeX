@@ -1,0 +1,88 @@
+1. Write a Java program to create a thread for moving a ball inside a panel vertically. The 
+ball should be created when the user clicks on the start button.   
+[15 M] 
+// Q1
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+class BallPanel extends JPanel implements Runnable {
+    int y = 0;
+    Thread t;
+
+    public void startBall() {
+        t = new Thread(this);
+        t.start();
+    }
+
+    public void run() {
+        try {
+            while (true) {
+                y += 5;
+                if (y > getHeight()) y = 0;
+                repaint();
+                Thread.sleep(50);
+            }
+        } catch (Exception e) {}
+    }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.fillOval(100, y, 30, 30);
+    }
+}
+
+public class BallAnimation extends JFrame {
+    BallPanel panel;
+    JButton btn;
+
+    public BallAnimation() {
+        panel = new BallPanel();
+        btn = new JButton("Start");
+
+        btn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                panel.startBall();
+            }
+        });
+
+        add(panel, BorderLayout.CENTER);
+        add(btn, BorderLayout.SOUTH);
+
+        setSize(300, 400);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public static void main(String[] args) {
+        new BallAnimation();
+    }
+}
+
+
+
+2. Write a Java program using Spring to display the message “If you can't explain it 
+simply, you don't understand it well enough”.    
+[15 M] 
+// Q2
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
+
+@Component
+class Message {
+    public void show() {
+        System.out.println("If you can't explain it simply, you don't understand it well enough");
+    }
+}
+
+@Configuration
+@ComponentScan(basePackages = "")
+class AppConfig {}
+
+public class MainApp {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        Message m = context.getBean(Message.class);
+        m.show();
+    }
+}

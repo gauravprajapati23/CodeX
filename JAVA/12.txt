@@ -1,0 +1,102 @@
+1. Write a JSP program to check whether given number is Perfect or not. (Use Include 
+directive).         
+[15 M] 
+// Q1
+// file: check.jsp
+<%
+int num = Integer.parseInt(request.getParameter("num"));
+int sum = 0;
+
+for(int i=1;i<=num/2;i++){
+    if(num%i==0){
+        sum+=i;
+    }
+}
+
+if(sum==num){
+    out.println("<font color='green'>Perfect Number</font>");
+}else{
+    out.println("<font color='red'>Not Perfect Number</font>");
+}
+%>
+
+// Q1 main page
+<html>
+<body>
+<form method="post">
+Enter Number: <input type="text" name="num">
+<input type="submit" value="Check">
+</form>
+
+<%
+if(request.getParameter("num")!=null){
+%>
+<%@ include file="check.jsp" %>
+<%
+}
+%>
+</body>
+</html>
+
+
+
+2. Write a Java Program to create a PROJECT table with field’s project_id, Project_name, 
+Project_description, Project_Status. Insert values in the table. Display all the details of 
+the PROJECT table in a tabular format on the screen.(using swing).  
+[15 M] 
+// Q2
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.sql.*;
+
+public class ProjectTable extends JFrame {
+    JTable table;
+    DefaultTableModel model;
+
+    public ProjectTable() {
+        model = new DefaultTableModel();
+        table = new JTable(model);
+
+        model.addColumn("Project ID");
+        model.addColumn("Project Name");
+        model.addColumn("Description");
+        model.addColumn("Status");
+
+        add(new JScrollPane(table));
+
+        setSize(500,300);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+            Statement st = con.createStatement();
+
+            st.executeUpdate("create table if not exists project(project_id int, project_name varchar(50), project_description varchar(100), project_status varchar(20))");
+
+            st.executeUpdate("insert into project values(1,'Proj1','Desc1','Active')");
+            st.executeUpdate("insert into project values(2,'Proj2','Desc2','Completed')");
+            st.executeUpdate("insert into project values(3,'Proj3','Desc3','Pending')");
+
+            ResultSet rs = st.executeQuery("select * from project");
+
+            while(rs.next()){
+                model.addRow(new Object[]{
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getString(4)
+                });
+            }
+
+            con.close();
+        } catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        new ProjectTable();
+    }
+}

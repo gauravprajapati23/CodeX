@@ -1,0 +1,68 @@
+1. Write a java program to display name and priority of a Thread.       
+[15 M] 
+// Q1
+class MyThread extends Thread {
+    MyThread(String name, int priority) {
+        setName(name);
+        setPriority(priority);
+    }
+
+    public void run() {
+        System.out.println("Thread Name: " + getName());
+        System.out.println("Thread Priority: " + getPriority());
+    }
+}
+
+public class ThreadInfo {
+    public static void main(String[] args) {
+        MyThread t1 = new MyThread("Thread-1", Thread.MAX_PRIORITY);
+        MyThread t2 = new MyThread("Thread-2", Thread.MIN_PRIORITY);
+
+        t1.start();
+        t2.start();
+    }
+}
+
+
+2. Write a SERVLET program which counts how many times a user has visited a web 
+page. If user is visiting the page for the first time, display a welcome message. If the 
+user is revisiting the page, display the number of times visited. (Use Cookie) 
+[15 M]
+// Q2
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class VisitServlet extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        int count = 0;
+        Cookie[] cookies = request.getCookies();
+        boolean found = false;
+
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if (c.getName().equals("visit")) {
+                    count = Integer.parseInt(c.getValue());
+                    found = true;
+                }
+            }
+        }
+
+        if (found) {
+            count++;
+            out.println("You visited " + count + " times");
+        } else {
+            count = 1;
+            out.println("Welcome! First visit");
+        }
+
+        Cookie c = new Cookie("visit", String.valueOf(count));
+        response.addCookie(c);
+    }
+}

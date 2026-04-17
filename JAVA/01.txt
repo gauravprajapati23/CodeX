@@ -1,1 +1,94 @@
+1. Write a Java program to display all the alphabets between ‘A’ to ‘Z’ after every 2 
+seconds.                    
+// Q1
+public class AlphabetDelay {
+    public static void main(String[] args) throws Exception {
+        for (char c = 'A'; c <= 'Z'; c++) {
+            System.out.println(c);
+            Thread.sleep(2000);
+        }
+    }
+}
 
+2. Write a Java program to accept the details of Employee (Eno, EName, Designation, 
+Salary) from a user and store it into the database. (Use Swing)  
+// Q2
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class EmployeeForm extends JFrame implements ActionListener {
+    JTextField t1, t2, t3, t4;
+    JButton b;
+
+    public EmployeeForm() {
+        setLayout(null);
+
+        JLabel l1 = new JLabel("Eno");
+        JLabel l2 = new JLabel("EName");
+        JLabel l3 = new JLabel("Designation");
+        JLabel l4 = new JLabel("Salary");
+
+        t1 = new JTextField();
+        t2 = new JTextField();
+        t3 = new JTextField();
+        t4 = new JTextField();
+
+        b = new JButton("Submit");
+
+        l1.setBounds(50, 50, 100, 30);
+        t1.setBounds(150, 50, 150, 30);
+
+        l2.setBounds(50, 100, 100, 30);
+        t2.setBounds(150, 100, 150, 30);
+
+        l3.setBounds(50, 150, 100, 30);
+        t3.setBounds(150, 150, 150, 30);
+
+        l4.setBounds(50, 200, 100, 30);
+        t4.setBounds(150, 200, 150, 30);
+
+        b.setBounds(150, 250, 100, 30);
+
+        add(l1); add(t1);
+        add(l2); add(t2);
+        add(l3); add(t3);
+        add(l4); add(t4);
+        add(b);
+
+        b.addActionListener(this);
+
+        setSize(400, 400);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        try {
+            int eno = Integer.parseInt(t1.getText());
+            String ename = t2.getText();
+            String desig = t3.getText();
+            double salary = Double.parseDouble(t4.getText());
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+            PreparedStatement ps = con.prepareStatement("insert into emp values(?,?,?,?)");
+
+            ps.setInt(1, eno);
+            ps.setString(2, ename);
+            ps.setString(3, desig);
+            ps.setDouble(4, salary);
+
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Record Inserted");
+
+            con.close();
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public static void main(String[] args) {
+        new EmployeeForm();
+    }
+}

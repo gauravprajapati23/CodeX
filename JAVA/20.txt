@@ -1,0 +1,67 @@
+1. Create a JSP page to accept a number from a user and display it in words: Example: 
+123 – One Two Three. The output should be in red color.     
+[15 M] 
+// Q1
+<html>
+<body>
+<form method="post">
+Enter Number: <input type="text" name="num">
+<input type="submit" value="Convert">
+</form>
+
+<%
+if(request.getParameter("num") != null){
+    String num = request.getParameter("num");
+    String[] words = {"Zero","One","Two","Three","Four","Five","Six","Seven","Eight","Nine"};
+
+    out.print("<font color='red'>");
+    for(int i=0;i<num.length();i++){
+        char c = num.charAt(i);
+        if(Character.isDigit(c)){
+            out.print(words[c - '0'] + " ");
+        }
+    }
+    out.print("</font>");
+}
+%>
+</body>
+</html>
+
+
+2. Write a java program to blink image on the JFrame continuously.  
+[15 M] 
+// Q2
+import javax.swing.*;
+
+public class BlinkImage extends JFrame implements Runnable {
+    JLabel label;
+    Thread t;
+    boolean flag = true;
+
+    public BlinkImage() {
+        ImageIcon img = new ImageIcon("image.jpg");
+        label = new JLabel(img);
+        add(label);
+
+        setSize(300,300);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        t = new Thread(this);
+        t.start();
+    }
+
+    public void run() {
+        try {
+            while(true){
+                label.setVisible(flag);
+                flag = !flag;
+                Thread.sleep(500);
+            }
+        } catch(Exception e){}
+    }
+
+    public static void main(String[] args) {
+        new BlinkImage();
+    }
+}

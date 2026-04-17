@@ -1,0 +1,76 @@
+1. Write a java program to accept ‘N’ integers from a user. Store and display integers in 
+sorted order having proper collection class. The collection should not accept duplicate 
+elements.  
+[15 M] 
+// Q1
+import java.util.*;
+
+public class SortedIntegers {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        TreeSet<Integer> set = new TreeSet<>();
+
+        System.out.print("Enter N: ");
+        int n = sc.nextInt();
+
+        for (int i = 0; i < n; i++) {
+            set.add(sc.nextInt());
+        }
+
+        System.out.println("Sorted (No duplicates):");
+        for (int num : set) {
+            System.out.println(num);
+        }
+    }
+}
+
+ 
+2. Write a Multithreading program in java to display the number’s between 1 to 100 
+continuously in a TextField by clicking on button. (Use Runnable Interface).     
+[15 M] 
+// Q2
+import javax.swing.*;
+import java.awt.event.*;
+
+public class NumberDisplay extends JFrame implements Runnable {
+    JTextField tf;
+    JButton btn;
+    Thread t;
+
+    public NumberDisplay() {
+        tf = new JTextField();
+        btn = new JButton("Start");
+
+        setLayout(null);
+
+        tf.setBounds(50, 50, 200, 30);
+        btn.setBounds(100, 100, 100, 30);
+
+        add(tf);
+        add(btn);
+
+        btn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                t = new Thread(NumberDisplay.this);
+                t.start();
+            }
+        });
+
+        setSize(300, 200);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void run() {
+        try {
+            for (int i = 1; i <= 100; i++) {
+                tf.setText(String.valueOf(i));
+                Thread.sleep(100);
+            }
+        } catch (Exception e) {}
+    }
+
+    public static void main(String[] args) {
+        new NumberDisplay();
+    }
+}

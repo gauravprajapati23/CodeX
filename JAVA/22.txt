@@ -1,0 +1,92 @@
+1. Write a Menu Driven program in Java for the following: Assume Employee table with   
+attributes (ENo, EName, Salary) is already created. 1. Insert 2. Update 3. Display 4. 
+Exit.            
+[15 M] 
+// Q1
+import java.sql.*;
+import java.util.*;
+
+public class EmployeeMenu {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+            
+            while (true) {
+                System.out.println("1.Insert 2.Update 3.Display 4.Exit");
+                int ch = sc.nextInt();
+
+                if (ch == 1) {
+                    System.out.print("Enter ENo, Name, Salary: ");
+                    int eno = sc.nextInt();
+                    String name = sc.next();
+                    int sal = sc.nextInt();
+
+                    PreparedStatement ps = con.prepareStatement("insert into emp values(?,?,?)");
+                    ps.setInt(1, eno);
+                    ps.setString(2, name);
+                    ps.setInt(3, sal);
+                    ps.executeUpdate();
+
+                } else if (ch == 2) {
+                    System.out.print("Enter ENo to update salary: ");
+                    int eno = sc.nextInt();
+                    System.out.print("Enter new salary: ");
+                    int sal = sc.nextInt();
+
+                    PreparedStatement ps = con.prepareStatement("update emp set salary=? where eno=?");
+                    ps.setInt(1, sal);
+                    ps.setInt(2, eno);
+                    ps.executeUpdate();
+
+                } else if (ch == 3) {
+                    Statement st = con.createStatement();
+                    ResultSet rs = st.executeQuery("select * from emp");
+
+                    while (rs.next()) {
+                        System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getInt(3));
+                    }
+
+                } else {
+                    break;
+                }
+            }
+
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+
+2. Write a JSP program which accepts UserName in a TextBox and greets the user 
+according to the time on server machine.            
+[15 M] 
+// Q2
+<html>
+<body>
+<form method="post">
+Enter Name: <input type="text" name="uname">
+<input type="submit" value="Submit">
+</form>
+
+<%
+if(request.getParameter("uname") != null){
+    String name = request.getParameter("uname");
+
+    java.util.Date d = new java.util.Date();
+    int hour = d.getHours();
+
+    String msg;
+    if(hour < 12) msg = "Good Morning";
+    else if(hour < 16) msg = "Good Afternoon";
+    else msg = "Good Evening";
+
+    out.println(msg + " " + name);
+}
+%>
+</body>
+</html>

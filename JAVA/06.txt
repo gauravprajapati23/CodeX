@@ -1,0 +1,63 @@
+1. Write a Java program to accept ‘n’ integers from the user and store them in a collection. 
+Display them in the sorted order. The collection should not accept duplicate elements. 
+(Use a suitable collection). Search for a particular element using predefined search 
+method in the Collection framework.      
+[15 M] 
+// Q1
+import java.util.*;
+
+public class CollectionDemo {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        TreeSet<Integer> set = new TreeSet<>();
+
+        System.out.print("Enter number of elements: ");
+        int n = sc.nextInt();
+
+        for (int i = 0; i < n; i++) {
+            set.add(sc.nextInt());
+        }
+
+        System.out.println("Sorted elements:");
+        for (int num : set) {
+            System.out.println(num);
+        }
+
+        System.out.print("Enter element to search: ");
+        int key = sc.nextInt();
+
+        if (set.contains(key)) {
+            System.out.println("Element found");
+        } else {
+            System.out.println("Element not found");
+        }
+    }
+}
+
+
+2. Write a java program to simulate traffic signal using threads.            
+[15 M]
+// Q2
+class TrafficSignal extends Thread {
+    public void run() {
+        try {
+            while (true) {
+                System.out.println("Red Signal");
+                Thread.sleep(3000);
+
+                System.out.println("Green Signal");
+                Thread.sleep(3000);
+
+                System.out.println("Yellow Signal");
+                Thread.sleep(2000);
+            }
+        } catch (Exception e) {}
+    }
+}
+
+public class TrafficDemo {
+    public static void main(String[] args) {
+        TrafficSignal t = new TrafficSignal();
+        t.start();
+    }
+}

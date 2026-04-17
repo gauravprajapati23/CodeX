@@ -1,0 +1,75 @@
+1. Write a Java program for a simple search engine. Accept a string to be searched. Search  
+the string in all text files in the current folder. Use a separate thread for each file. The 
+result should display the filename and line number where the string is found.  
+[15 M] 
+// Q1
+import java.io.*;
+import java.util.*;
+
+class FileSearch extends Thread {
+    File file;
+    String keyword;
+
+    FileSearch(File file, String keyword) {
+        this.file = file;
+        this.keyword = keyword;
+    }
+
+    public void run() {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            int lineNo = 1;
+
+            while ((line = br.readLine()) != null) {
+                if (line.contains(keyword)) {
+                    System.out.println("Found in " + file.getName() + " at line " + lineNo);
+                }
+                lineNo++;
+            }
+            br.close();
+        } catch (Exception e) {}
+    }
+}
+
+public class SearchEngine {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter string to search: ");
+        String keyword = sc.nextLine();
+
+        File folder = new File(".");
+        File[] files = folder.listFiles();
+
+        for (File file : files) {
+            if (file.isFile() && file.getName().endsWith(".txt")) {
+                new FileSearch(file, keyword).start();
+            }
+        }
+    }
+}
+
+
+2. Write a JSP program to calculate sum of first and last digit of a given number. Display 
+sum in Red Color with font size 18.           
+[15 M] 
+// Q2
+<%
+int num = Integer.parseInt(request.getParameter("num"));
+int last = num % 10;
+
+int first = num;
+while (first >= 10) {
+    first /= 10;
+}
+
+int sum = first + last;
+%>
+
+<html>
+<body>
+<font color="red" size="5">
+<%= "Sum = " + sum %>
+</font>
+</body>
+</html>

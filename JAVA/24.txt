@@ -1,0 +1,65 @@
+1. Write a java program to scroll the text from left to right continuously.         
+[15 M] 
+// Q1
+import javax.swing.*;
+
+public class ScrollText extends JFrame implements Runnable {
+    JLabel label;
+    String text = "Scrolling Text Demo     ";
+    Thread t;
+
+    public ScrollText() {
+        label = new JLabel(text, SwingConstants.CENTER);
+        add(label);
+
+        setSize(400,200);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        t = new Thread(this);
+        t.start();
+    }
+
+    public void run() {
+        try {
+            while(true){
+                text = text.substring(1) + text.charAt(0);
+                label.setText(text);
+                Thread.sleep(200);
+            }
+        } catch(Exception e){}
+    }
+
+    public static void main(String[] args) {
+        new ScrollText();
+    }
+}
+
+
+2. Write a JSP script to accept username and password from user, if they are same then 
+display “Login Successfully” message in Login.html file, otherwise display “Login 
+Failed” Message in Error.html file.              
+[15 M] 
+// Q2
+<%
+String uname = request.getParameter("uname");
+String pass = request.getParameter("pass");
+
+if(uname != null && pass != null){
+    if(uname.equals(pass)){
+        response.sendRedirect("Login.html");
+    } else {
+        response.sendRedirect("Error.html");
+    }
+}
+%>
+
+<html>
+<body>
+<form method="post">
+Username: <input type="text" name="uname"><br>
+Password: <input type="password" name="pass"><br>
+<input type="submit" value="Login">
+</form>
+</body>
+</html>

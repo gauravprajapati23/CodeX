@@ -1,0 +1,76 @@
+1. Write a Java Program to display the details of College (CID, CName, address, Year)  
+on JTable.            
+[15 M]
+// Q1
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.sql.*;
+
+public class CollegeTable extends JFrame {
+    JTable table;
+    DefaultTableModel model;
+
+    public CollegeTable() {
+        model = new DefaultTableModel();
+        table = new JTable(model);
+
+        model.addColumn("CID");
+        model.addColumn("CName");
+        model.addColumn("Address");
+        model.addColumn("Year");
+
+        add(new JScrollPane(table));
+
+        setSize(500,300);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("select * from college");
+
+            while(rs.next()){
+                model.addRow(new Object[]{
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getInt(4)
+                });
+            }
+
+            con.close();
+        } catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        new CollegeTable();
+    }
+}
+
+
+2. Write a SERVLET program to change inactive time interval of session.  
+[15 M] 
+// Q2
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SessionServlet extends HttpServlet {
+
+    public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+
+        res.setContentType("text/html");
+        PrintWriter out = res.getWriter();
+
+        HttpSession session = req.getSession();
+        session.setMaxInactiveInterval(60);
+
+        out.println("Session timeout set to 60 seconds");
+    }
+}

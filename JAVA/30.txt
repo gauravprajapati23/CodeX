@@ -1,0 +1,79 @@
+1. Write a java program for the implementation of synchronization.  
+[15 M] 
+// Q1
+class Table {
+    synchronized void printTable(int n) {
+        for (int i = 1; i <= 5; i++) {
+            System.out.println(n * i);
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {}
+        }
+    }
+}
+
+class MyThread1 extends Thread {
+    Table t;
+    MyThread1(Table t) { this.t = t; }
+
+    public void run() {
+        t.printTable(2);
+    }
+}
+
+class MyThread2 extends Thread {
+    Table t;
+    MyThread2(Table t) { this.t = t; }
+
+    public void run() {
+        t.printTable(5);
+    }
+}
+
+public class SyncDemo {
+    public static void main(String[] args) {
+        Table obj = new Table();
+
+        MyThread1 t1 = new MyThread1(obj);
+        MyThread2 t2 = new MyThread2(obj);
+
+        t1.start();
+        t2.start();
+    }
+}
+
+
+2. Write a Java Program for the implementation of scrollable ResultSet. Assume Teacher 
+table with attributes (TID, TName, Salary) is already created.     
+[15 M] 
+// Q2
+import java.sql.*;
+
+public class ScrollableRS {
+    public static void main(String[] args) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+
+            Statement st = con.createStatement(
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY
+            );
+
+            ResultSet rs = st.executeQuery("select * from teacher");
+
+            rs.last();
+            System.out.println("Last Record: " + rs.getInt(1) + " " + rs.getString(2) + " " + rs.getInt(3));
+
+            rs.first();
+            System.out.println("First Record: " + rs.getInt(1) + " " + rs.getString(2) + " " + rs.getInt(3));
+
+            rs.absolute(2);
+            System.out.println("Second Record: " + rs.getInt(1) + " " + rs.getString(2) + " " + rs.getInt(3));
+
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}

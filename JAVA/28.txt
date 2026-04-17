@@ -1,0 +1,44 @@
+1. Write a JSP script to accept a String from a user and display it in reverse order.   
+[15 M] 
+// Q1
+<html>
+<body>
+<form method="post">
+Enter String: <input type="text" name="str">
+<input type="submit" value="Reverse">
+</form>
+
+<%
+if(request.getParameter("str") != null){
+    String str = request.getParameter("str");
+    String rev = "";
+
+    for(int i = str.length()-1; i >= 0; i--){
+        rev += str.charAt(i);
+    }
+
+    out.println("Reversed String: " + rev);
+}
+%>
+</body>
+</html>
+
+
+2. Write a java program to display name of currently executing Thread in multithreading. 
+[15 M] 
+// Q2
+class MyThread extends Thread {
+    public void run() {
+        System.out.println("Current Thread: " + Thread.currentThread().getName());
+    }
+}
+
+public class ThreadNameDemo {
+    public static void main(String[] args) {
+        MyThread t1 = new MyThread();
+        MyThread t2 = new MyThread();
+
+        t1.start();
+        t2.start();
+    }
+}

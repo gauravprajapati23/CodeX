@@ -1,0 +1,62 @@
+1. Write a java program to create a TreeSet, add some colors (String) and print out the 
+content of TreeSet in ascending order.      
+[15 M] 
+// Q1
+import java.util.*;
+
+public class TreeSetDemo {
+    public static void main(String[] args) {
+        TreeSet<String> colors = new TreeSet<>();
+
+        colors.add("Red");
+        colors.add("Blue");
+        colors.add("Green");
+        colors.add("Yellow");
+        colors.add("Orange");
+
+        for (String color : colors) {
+            System.out.println(color);
+        }
+    }
+}
+
+
+2. Write a Java program to accept the details of Teacher (TNo,  TName, Subject). Insert at 
+least 5 Records into Teacher Table and display the details of Teacher who is teaching 
+“JAVA” Subject.  (Use PreparedStatement Interface)               
+[15 M] 
+// Q2
+import java.sql.*;
+
+public class TeacherDemo {
+    public static void main(String[] args) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+
+            PreparedStatement ps1 = con.prepareStatement("create table if not exists teacher(tno int, tname varchar(50), subject varchar(50))");
+            ps1.executeUpdate();
+
+            PreparedStatement ps2 = con.prepareStatement("insert into teacher values(?,?,?)");
+
+            ps2.setInt(1, 1); ps2.setString(2, "Amit"); ps2.setString(3, "JAVA"); ps2.executeUpdate();
+            ps2.setInt(1, 2); ps2.setString(2, "Priya"); ps2.setString(3, "DBMS"); ps2.executeUpdate();
+            ps2.setInt(1, 3); ps2.setString(2, "Rahul"); ps2.setString(3, "JAVA"); ps2.executeUpdate();
+            ps2.setInt(1, 4); ps2.setString(2, "Sneha"); ps2.setString(3, "OS"); ps2.executeUpdate();
+            ps2.setInt(1, 5); ps2.setString(2, "Kiran"); ps2.setString(3, "JAVA"); ps2.executeUpdate();
+
+            PreparedStatement ps3 = con.prepareStatement("select * from teacher where subject=?");
+            ps3.setString(1, "JAVA");
+
+            ResultSet rs = ps3.executeQuery();
+
+            while (rs.next()) {
+                System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3));
+            }
+
+            con.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}

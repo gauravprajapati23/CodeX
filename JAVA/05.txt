@@ -1,0 +1,76 @@
+1. Write a Java Program to create the hash table that will maintain the mobile number and 
+student name. Display the details of student using Enumeration interface. 
+[15 M] 
+// Q1
+import java.util.*;
+
+public class StudentMobile {
+    public static void main(String[] args) {
+        Hashtable<String, String> ht = new Hashtable<>();
+
+        ht.put("9876543210", "Rahul");
+        ht.put("9123456780", "Priya");
+        ht.put("9988776655", "Amit");
+
+        Enumeration<String> keys = ht.keys();
+
+        while (keys.hasMoreElements()) {
+            String mobile = keys.nextElement();
+            String name = ht.get(mobile);
+            System.out.println("Mobile: " + mobile + " Name: " + name);
+        }
+    }
+}
+
+
+2. Create a JSP page for an online multiple choice test. The questions are randomly selected 
+from a database and displayed on the screen. The choices are displayed using radio 
+buttons. When the user clicks on next, the next question is displayed. When the user 
+clicks on submit, display the total score on the screen.   
+[15 M]
+// Q2
+<%@ page import="java.sql.*" %>
+<%
+int score = 0;
+int qno = 1;
+
+if(request.getParameter("qno") != null){
+    qno = Integer.parseInt(request.getParameter("qno"));
+}
+
+if(request.getParameter("answer") != null && request.getParameter("correct") != null){
+    if(request.getParameter("answer").equals(request.getParameter("correct"))){
+        score = Integer.parseInt(request.getParameter("score")) + 1;
+    } else {
+        score = Integer.parseInt(request.getParameter("score"));
+    }
+}
+
+Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+Statement st = con.createStatement();
+ResultSet rs = st.executeQuery("SELECT * FROM questions ORDER BY RAND() LIMIT 1");
+
+if(rs.next()){
+%>
+<form method="post">
+<input type="hidden" name="qno" value="<%=qno+1%>">
+<input type="hidden" name="score" value="<%=score%>">
+<input type="hidden" name="correct" value="<%=rs.getString("correct")%>">
+
+<p><%=rs.getString("question")%></p>
+
+<input type="radio" name="answer" value="<%=rs.getString("opt1")%>"><%=rs.getString("opt1")%><br>
+<input type="radio" name="answer" value="<%=rs.getString("opt2")%>"><%=rs.getString("opt2")%><br>
+<input type="radio" name="answer" value="<%=rs.getString("opt3")%>"><%=rs.getString("opt3")%><br>
+<input type="radio" name="answer" value="<%=rs.getString("opt4")%>"><%=rs.getString("opt4")%><br>
+
+<input type="submit" value="Next">
+<input type="submit" name="submit" value="Submit">
+</form>
+
+<%
+if(request.getParameter("submit") != null){
+    out.println("Total Score: " + score);
+}
+}
+%>

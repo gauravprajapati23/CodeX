@@ -1,0 +1,90 @@
+1. Write a JSP program to accept Name and Age of Voter and check whether he is    
+eligible for voting or not.             
+[15 M] 
+// Q1
+<html>
+<body>
+<form method="post">
+Name: <input type="text" name="name"><br>
+Age: <input type="number" name="age"><br>
+<input type="submit" value="Check">
+</form>
+
+<%
+if(request.getParameter("age") != null){
+    String name = request.getParameter("name");
+    int age = Integer.parseInt(request.getParameter("age"));
+
+    if(age >= 18){
+        out.println(name + " is Eligible for Voting");
+    } else {
+        out.println(name + " is Not Eligible for Voting");
+    }
+}
+%>
+</body>
+</html>
+
+
+2. Write a Java Program for the following: Assume database is already created.              
+[15 M] 
+// Q2
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class DDLGui extends JFrame implements ActionListener {
+    JTextField tf;
+    JButton b1, b2, b3;
+    Connection con;
+
+    public DDLGui() {
+        setLayout(null);
+
+        JLabel l = new JLabel("Type Your DDL Query Here");
+        tf = new JTextField();
+
+        b1 = new JButton("Create Table");
+        b2 = new JButton("Alter Table");
+        b3 = new JButton("Drop Table");
+
+        l.setBounds(50, 30, 200, 30);
+        tf.setBounds(250, 30, 200, 30);
+
+        b1.setBounds(50, 100, 120, 30);
+        b2.setBounds(180, 100, 120, 30);
+        b3.setBounds(310, 100, 120, 30);
+
+        add(l); add(tf);
+        add(b1); add(b2); add(b3);
+
+        b1.addActionListener(this);
+        b2.addActionListener(this);
+        b3.addActionListener(this);
+
+        setSize(500, 250);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+        } catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        try {
+            Statement st = con.createStatement();
+            st.executeUpdate(tf.getText());
+            JOptionPane.showMessageDialog(this, "Query Executed");
+        } catch(Exception ex){
+            JOptionPane.showMessageDialog(this, ex);
+        }
+    }
+
+    public static void main(String[] args) {
+        new DDLGui();
+    }
+}

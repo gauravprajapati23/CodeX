@@ -1,0 +1,51 @@
+1. Write a java program to accept a String from a user and display each vowel from a    
+String after every 3 seconds.          
+[15 M] 
+// Q1
+import java.util.*;
+
+public class VowelDisplay {
+    public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter String: ");
+        String str = sc.nextLine();
+
+        for (int i = 0; i < str.length(); i++) {
+            char ch = Character.toLowerCase(str.charAt(i));
+            if (ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u') {
+                System.out.println(ch);
+                Thread.sleep(3000);
+            }
+        }
+    }
+}
+
+
+2. Write a java program to accept ‘N’ student names through command line, store them 
+into the appropriate Collection and display them by using Iterator and ListIterator 
+interface.         
+[15 M] 
+// Q2
+import java.util.*;
+
+public class StudentList {
+    public static void main(String[] args) {
+        ArrayList<String> list = new ArrayList<>();
+
+        for (int i = 0; i < args.length; i++) {
+            list.add(args[i]);
+        }
+
+        System.out.println("Using Iterator:");
+        Iterator<String> it = list.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+
+        System.out.println("Using ListIterator:");
+        ListIterator<String> lit = list.listIterator();
+        while (lit.hasNext()) {
+            System.out.println(lit.next());
+        }
+    }
+}

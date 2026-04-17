@@ -1,0 +1,97 @@
+1. Write a java program to accept ‘N’ Subject Names from a user store them into 
+LinkedList Collection and Display them by using Iterator interface.  
+[15 M] 
+// Q1
+import java.util.*;
+
+public class SubjectList {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        LinkedList<String> list = new LinkedList<>();
+
+        System.out.print("Enter N: ");
+        int n = sc.nextInt();
+        sc.nextLine();
+
+        for (int i = 0; i < n; i++) {
+            list.add(sc.nextLine());
+        }
+
+        Iterator<String> it = list.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
+}
+
+
+2. Write a java program to solve producer consumer problem in which a producer 
+produces a value and consumer consume the value before producer generate the next 
+value. (Hint: use thread synchronization)      
+[15 M]
+// Q2
+class Shared {
+    int value;
+    boolean flag = false;
+
+    synchronized void produce(int v) {
+        try {
+            while (flag)
+                wait();
+            value = v;
+            System.out.println("Produced: " + value);
+            flag = true;
+            notify();
+        } catch (Exception e) {}
+    }
+
+    synchronized void consume() {
+        try {
+            while (!flag)
+                wait();
+            System.out.println("Consumed: " + value);
+            flag = false;
+            notify();
+        } catch (Exception e) {}
+    }
+}
+
+class Producer extends Thread {
+    Shared s;
+
+    Producer(Shared s) {
+        this.s = s;
+    }
+
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            s.produce(i);
+        }
+    }
+}
+
+class Consumer extends Thread {
+    Shared s;
+
+    Consumer(Shared s) {
+        this.s = s;
+    }
+
+    public void run() {
+        for (int i = 1; i <= 5; i++) {
+            s.consume();
+        }
+    }
+}
+
+public class ProducerConsumerDemo {
+    public static void main(String[] args) {
+        Shared s = new Shared();
+
+        Producer p = new Producer(s);
+        Consumer c = new Consumer(s);
+
+        p.start();
+        c.start();
+    }
+}

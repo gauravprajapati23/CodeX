@@ -1,0 +1,77 @@
+1. Write a JSP program to display the details of Patient (PNo, PName, Address, age, 
+disease) in tabular form on browser.              [15 M] 
+// Q1
+<%@ page import="java.util.*" %>
+<html>
+<body>
+<table border="1">
+<tr>
+<th>PNo</th>
+<th>PName</th>
+<th>Address</th>
+<th>Age</th>
+<th>Disease</th>
+</tr>
+
+<%
+class Patient {
+    int pno;
+    String pname, address, disease;
+    int age;
+
+    Patient(int pno, String pname, String address, int age, String disease) {
+        this.pno = pno;
+        this.pname = pname;
+        this.address = address;
+        this.age = age;
+        this.disease = disease;
+    }
+}
+
+ArrayList<Patient> list = new ArrayList<>();
+list.add(new Patient(1,"Rahul","Mumbai",25,"Fever"));
+list.add(new Patient(2,"Priya","Pune",30,"Cold"));
+list.add(new Patient(3,"Amit","Nashik",28,"Flu"));
+
+for(Patient p : list){
+%>
+<tr>
+<td><%=p.pno%></td>
+<td><%=p.pname%></td>
+<td><%=p.address%></td>
+<td><%=p.age%></td>
+<td><%=p.disease%></td>
+</tr>
+<% } %>
+
+</table>
+</body>
+</html>
+
+
+ 
+2. Write a Java program to create LinkedList of String objects and perform the following: 
+i. Add element at the end of the list 
+ii. Delete first element of the list 
+iii. Display the contents of list in reverse order   [15 M] 
+// Q2
+import java.util.*;
+
+public class LinkedListDemo {
+    public static void main(String[] args) {
+        LinkedList<String> list = new LinkedList<>();
+
+        list.add("Apple");
+        list.add("Banana");
+        list.add("Mango");
+
+        list.addLast("Orange");
+
+        list.removeFirst();
+
+        ListIterator<String> it = list.listIterator(list.size());
+        while (it.hasPrevious()) {
+            System.out.println(it.previous());
+        }
+    }
+}
